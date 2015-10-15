@@ -1,0 +1,127 @@
+# A game that randomly generates the name of a magic card.  Then the players describe what the card would be(card type, casting cost, rules text, flavor text, power and toughness).  Each turn one player is assigned the role of judge and chooses which entry wins that round.  The judge does not submit an entry.  The users input the amount of rounds they want to play.  Scores are updated at the end of each round and displayed next to a list of player names.  There is a time limit for submitting an entry.  If a player has not submitted one in time the entries will be judged.  
+import sys
+import random
+import string
+import os
+
+def speech(thing, lower = True):
+    '''
+    Used to create the card names
+    :param thing: noun, adj, advbs, verbs, names
+    :param lower: lowercase, add False if you want the word to be uppercase(thing, False)
+    :return:pulls a random word from the part of speech chosen
+    '''
+    if thing == 'noun':
+        word = random.choice(list_nouns)
+    elif thing == 'adj':
+        word = random.choice(list_adjs)
+    elif thing == 'advb':
+        word = random.choice(list_advbs)
+    elif thing == 'verb':
+        word = random.choice(list_verbs)
+    elif thing == 'name':
+        word = random.choice(list_names)
+    else:
+        print("Error, you did not enter an appropriate choice.  Enter 'noun', 'adj', 'advb', 'verb', or 'name'")
+        sys.exit(1)
+
+    if lower:
+        return word
+    else:
+        return word.title()
+
+def generate_card():
+    '''
+
+    :return: Generates the name of a magic card
+    '''
+
+    card_name = random.randint(1,4)
+
+    if card_name == 1:
+        print(speech("noun", False), 'of', speech("name"))
+
+    elif card_name == 2:
+        print(speech("noun", False),speech("noun"))
+    elif card_name == 3:
+        print(speech("verb", False), speech("noun "))
+
+    elif card_name == 4:
+        print(speech('adj', False), speech('noun'))
+
+
+# variables for different parts of speech to be used when making magic cards
+
+with open("/home/john/scripts/dictionaries/names.txt") as f:
+    list_names = f.read().splitlines()
+f.close()
+name = random.choice(list_names)
+with open('/home/john/scripts/dictionaries/adverbs.txt') as f:
+   list_advbs = f.read().splitlines()
+f.close()
+advb = random.choice(list_advbs)
+with open('/home/john/scripts/dictionaries/nouns.txt') as f:
+    list_nouns = f.read().splitlines()
+
+f.close()
+noun = random.choice(list_nouns)
+with open('/home/john/scripts/dictionaries/adjectives.txt') as f:
+    list_adjs = f.read().splitlines()
+    f.close()
+adj = random.choice(list_adjs)
+with open('/home/john/scripts/dictionaries/verbs.txt') as f:
+    list_verbs = f.read().splitlines()
+f.close()
+verb = random.choice(list_verbs)
+
+
+#code that inputs user names and stores them to a list
+
+users_list = []
+
+while (True):
+    users = int(input("How many players are there?: "))
+
+    for count in range (1, users +1, 1):
+        user = input("Player %i please enter your username:" %count)
+        users_list.append(user)
+    print(users_list)
+    break
+
+Judge = random.choice(users_list)
+
+print(Judge, "will be judging this round")
+
+while (True):
+    card = generate_card()
+
+    keep = input("%s would you like to use this card? (y)(n): " %(Judge))
+
+    if (keep == "n"):
+        print("Generating a new card")
+
+    if (keep == "y"):
+        break
+
+entries = {}
+for count in range (0, len(users_list), 1):
+    if users_list[count] != Judge:
+        user = users_list[count]
+
+        user_card = []
+
+        casting_cost = input("%s what is the casting cost for your card?: " %user)
+        user_card.append(casting_cost)
+        card_type = input("What is your card type?: ")
+        user_card.append(card_type)
+        card_text = input("What does your card do?: ")
+        user_card.append(card_text)
+        flavor_text = input("What is the flavor text for your card?: ")
+        user_card.append(flavor_text)
+        entries[user] = user_card
+
+print(entries)
+
+winner = input("%s whose card do you choose?: " %(Judge))
+
+print(Judge, "chose", winner, "they win the round")
